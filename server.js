@@ -6,7 +6,7 @@ const app = require("./app")
 app.use("/api",route)
 const DB = process.env.DATABASE
 
-mongoose
+mongoose 
 .connect(DB)
 .then(()=>{
     console.log("database connected")

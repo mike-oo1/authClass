@@ -37,8 +37,8 @@ exports.newUser = async(req,res)=>{
         },process.env.JWT_TOKEN,{expiresIn: "1d"})
         createUser.Token = newToken
         const subject ="KINDLY VERIFY BRO"
-        const link =`${req.protocol}: //${req.get("host")}/userverify/${createUser._id}`
-        const message =`CLICK ON THR ${link} TO VERIFY`
+        const link =`${req.protocol}: //${req.get("host")}/userverify${createUser._id}/${newToken}`
+        const message =`click on this link${link} to verify, kindly note that this link will expire after 5 minutes`
         mailsender(
             {
                 from:"gmail",
@@ -64,9 +64,20 @@ exports.newUser = async(req,res)=>{
 }
 exports.userVerify = async(req,res)=>{
     try {
+        const registeredUser = await userModel.findById(req.params.id)
+        const registeredToken= registeredUser.Token
+        await jwt.verify(registeredToken,process.env.JWT_TOKEN,(err,data)=>{
+            if(err){
+                return res.status(300).json({
+                    message:"this link has expired"
+                })
+            }else{
+                return data
+            }
+        })
         const verified =await userModel.findByIdAndUpdate(req.params.id,{isVerified:true},)
         if(!verified){
-            return res.status(400).jspn({
+            return res.status(400).json({
                 message:"unable to verify user"
             })
         }else{
@@ -76,9 +87,10 @@ exports.userVerify = async(req,res)=>{
         }
         
     } catch (error) {
-        return res.status(500).json({
-            message:error.message
-        })
+        res.send(error.message)
+       
+            error.message
+        
         
     }
 }
@@ -87,16 +99,13 @@ exports.signIn = async(req,res)=>{
         const {userName,Password}=req.body
         const check = await userModel.findOne({userName:userName})
         if(!check){
-            res.status(400).json({
-                message:"wrong password format"
-
-
-
+           return res.status(400).json({
+                message:"wrong username format"
             })
         }
         const isPassword = await bcryptjs.compare(Password,check.Password)
         if(!isPassword){
-            res.status(400).json({
+            return res.status(400).json({
                 message: "wrong password"
             })
         }
@@ -108,18 +117,60 @@ const createToken =jwt.sign({
 },process.env.JWT_TOKEN,{expiresIn :"1d"})
 check.token =createToken
 await check.save()
-res.status(201).json({
+return res.status(201).json({
     status:"successful",
     message:"logged in successful",
     data:check
 })
 
     } catch (error) {
-       error
+       error.message
         
     }
 }
 
-exports.forgotPassWord =async(req,res)=>{
-    
+
+exports.changePassword=async(req,res)=>{
+    try {
+        const {Password}=req.body
+       const id =req.params.id
+       const salt =bcryptjs.genSaltSync(10)
+       const hash = bcryptjs.hashSync(Password,salt)
+       const resetDetails={
+        Password:hash
+    }
+        const result =await userModel.findByIdAndUpdate(id,resetDetails,{Password:hash},{new:true})
+
+        if(!result){
+            res.status(400).json({
+                message:"cannot reset password"
+            })
+        }else{
+            res.status(200).json({
+                status:"success",
+                message:"password reset successfully",
+                data:result
+            })
+        }
+        const createToken =jwt.sign({
+            Password
+        },process.env.JWT_TOKEN,{expiresIn :"1d"})
+        check.Token =createToken
+        const SAVE = await check.save()
+        res.status(201).json({
+            status:"successful",
+            message:"password changed  successfully",
+            data:SAVE
+        })
+    } catch (error) {
+    (error.message)
+      
+        
+    }
+}
+
+
+exports.verifyPass= async(req,res)=>{
+
+     
 }

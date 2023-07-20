@@ -9,6 +9,18 @@ const mySchema = new mongoose.Schema({
         type:String,
         required:[true,"email is required"]
     },
+    isVerified:{
+        type:Boolean,
+        default:false
+    },
+    isSuperAdmin:{
+        type:Boolean,
+        default:false
+    },
+    isAdmin:{
+        type:Boolean,
+        default:false
+    },
     Password:{
         type:String,
         required:[true,"password required"]
