@@ -20,11 +20,13 @@ exports.newUser = async(req,res)=>{
         // hashing password
         const salt =bcryptjs.genSaltSync(10)
         const hash = bcryptjs.hashSync(Password,salt)
-
+        console.log(req.file)
+        
         const data ={
             userName,
             Email,
-            Password:hash
+            Password:hash,
+            profilePic:req.file.path
         }
        
 
@@ -87,7 +89,7 @@ exports.userVerify = async(req,res)=>{
         }
         
     } catch (error) {
-        res.send(error.message)
+        error.message
        
             error.message
         

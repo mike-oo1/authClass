@@ -1,20 +1,21 @@
 const express = require("express")
 const mongoose =require("mongoose")
 const adminModel= require("../Models/model")
+const Model= require("../Models/model")
 const jwt =require("jsonwebtoken")
 const bcryptjs =require("bcryptjs")
 
-
-
 exports.createAdmin = async(req,res)=>{
     try {
-        const {userName,Email,Password}= req.body
+        const id = req.params.id
+        const {userName,Email,Password}=(id, req.body)
         const salt =bcryptjs.genSaltSync(10)
         const hash = bcryptjs.hashSync(Password,salt)
         const data ={
             userName,
             Email,
             Password:hash,
+            profilePic:req.file.path
         }
         const createAdmin= new adminModel(data)
         const newToken = jwt.sign({
@@ -28,8 +29,6 @@ exports.createAdmin = async(req,res)=>{
             message:"created",
             data:createAdmin
         })
-
-        
     } catch (error) {
         return res.status(500).json({
             message:error.message
@@ -75,10 +74,13 @@ return res.status(201).json({
 
 exports.upgradeAdminTosuperAdmin =async(req,res)=>{
     try {
-        const {adminId} =req.params
-        const newsuperAdmin =await adminModel.findByIdAndUpdate(adminId,
+        const {id} =req.params
+        console.log(id);
+        const newsuperAdmin =await adminModel.findByIdAndUpdate(id,
             {isSuperAdmin:true,
             isAdmin:true,
+        
+        },{
             new:true
         })
         return res.status(200).json({
@@ -94,3 +96,26 @@ exports.upgradeAdminTosuperAdmin =async(req,res)=>{
     }
 }
 
+exports.getAlls =async(req,res)=>{
+    try {
+        const getAllUsers =await adminModel.find()
+        if(getAllUsers){
+            return res.status(200).json({
+                messafe:"here are all iusers",
+                data:getAllUsers
+            })
+        }else{
+            return res.status(200).json({
+                message:"cannot",
+                
+            })
+        }
+        
+    } catch (error) {
+        return res.status(500).json({
+            message:error.message
+        })
+        
+        
+    }
+}

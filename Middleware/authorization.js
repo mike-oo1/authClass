@@ -32,7 +32,7 @@ const isAdminAuthorized = async (req, res, next) => {
 console.log(req.userId)
     const user = await User.findById(req.userId)
     console.log(user)
-    if (user.isAdmin) {
+    if (user.isAdminAuthorized) {
       next()
     } else {
       res.status(401).json({ message: "not an admin" })
