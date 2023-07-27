@@ -89,10 +89,8 @@ exports.userVerify = async(req,res)=>{
         }
         
     } catch (error) {
-        error.message
+       return 
        
-            error.message
-        
         
     }
 }
@@ -153,7 +151,7 @@ exports.changePassword=async(req,res)=>{
                 message:"password reset successfully",
                 data:result
             })
-        }
+        }   
         const createToken =jwt.sign({
             Password
         },process.env.JWT_TOKEN,{expiresIn :"1d"})
@@ -171,8 +169,22 @@ exports.changePassword=async(req,res)=>{
     }
 }
 
-
-exports.verifyPass= async(req,res)=>{
-
-     
+exports.logout =async(req,res)=>{
+    try {
+        const user =await todoModel.findById(req.users._id)
+        const bin =[]
+        const hasAuth = req.headers.authorization
+        const token = hasAuth.spit(" ")[1]
+        bin.push(token)
+        user.isLoggedin =false
+        await user.save()
+        return res.status(201).json({
+            message:"this user has been logged out successfully"
+        })
+    } catch (error) {
+        return res.status(500).json({
+            message:error.message
+        })
+        
+    }
 }

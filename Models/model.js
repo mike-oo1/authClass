@@ -21,6 +21,10 @@ const mySchema = new mongoose.Schema({
         type:Boolean,
         default:false
     },
+    isEditor:{
+        type:Boolean,
+        default:false
+    },
     Password:{
         type:String,
         required:[true,"password required"]
