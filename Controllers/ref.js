@@ -41,14 +41,14 @@ exports.isDone = async(req,res)=>{
         }else if(Task.length == 200){
             return res.status(200).json({
                 messgae:`task completed`,
-                data:Task.length,
+                data:`you have successfully done ${Task.length}`,
                 status : {isDone:true,isPending:false,isCompletedWords:true}
 
 
             })
         }else if(Task.length > 200){
             return res.status(200).json({
-                message:`youre limited to ${totalWords} per client`,
+                message:`youre limited to ${Task.length} per client`,
                 data: Task.length
             })
         }
@@ -64,7 +64,7 @@ exports.isDone = async(req,res)=>{
 }
 exports.getAllDoneTasks = async(req,res)=>{
     try {
-        const allDoneTasks = await refs.find({isDone:this.isDone})
+        const allDoneTasks = await refs.find({isDone:isDone})
         if(!allDoneTasks){
             return res.status(404).json({
                 message:"no complete task found"
@@ -105,4 +105,25 @@ exports.getAllPendingTasks = async(req,res)=>{
     
   }
 }
-
+exports.updateTask = async(req,res)=>{
+    try {
+        const id = req.params.id
+        const updated =await refs.findById(id)
+        if(!updated){
+            return res.status(400).json({
+                message:"cannot update Task"
+            })
+        }else{
+            return res.status(201).json({
+                status:"updated",
+                message:"this write up has been updated successfully",
+                data:updated
+            })
+        }
+    } catch (error) {
+        return res.status(500).json({
+            message: error.message
+        })
+        
+    }
+}
