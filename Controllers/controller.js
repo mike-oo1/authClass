@@ -110,7 +110,6 @@ exports.signIn = async(req,res)=>{
             })
         }
 
-        // GENERATING LOGIN TOKEN
 const createToken =jwt.sign({
     userName,
     Password
@@ -128,8 +127,6 @@ return res.status(201).json({
         
     }
 }
-
-
 exports.changePassword=async(req,res)=>{
     try {
         const {Password}=req.body

@@ -13,15 +13,19 @@ const mySchema = new mongoose.Schema({
         type:Boolean,
         default:false
     },
-    isSuperAdmin:{
-        type:Boolean,
-        default:false
-    },
-    isAdmin:{
+    // isSuperAdmin:{
+    //     type:Boolean,
+    //     default:false
+    // },
+    isWriter:{
         type:Boolean,
         default:false
     },
     isEditor:{
+        type:Boolean,
+        default:false
+    },
+    isLoggedin:{
         type:Boolean,
         default:false
     },
@@ -40,5 +44,4 @@ const mySchema = new mongoose.Schema({
 },{timestamps:true})
 
 const userModel = mongoose.model("Users",mySchema)
-
 module.exports = userModel

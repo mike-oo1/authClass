@@ -1,7 +1,6 @@
-const refs = require("../Models/refModel")
+const refs = require("../Models/taskModel")
 const writer = require("../Models/writerModel")
 const bcrypt =require("bcryptjs")
-// const jwt = require("jsonwebtoken")
 exports.writerLogin = async(req,res)=>{
     try {
         const {userName,Password}=req.body
@@ -21,7 +20,6 @@ exports.writerLogin = async(req,res)=>{
                 message:"you have successfully logged in",
             })
         }
-
     } catch (error) {
         return res.status(500).json({
             message:error.message
@@ -34,15 +32,13 @@ exports.isDone = async(req,res)=>{
         if(Task.length <=100){
             return res.status(200).json({
                 message: `youre yet to complete ur task`,
-                data:Task.length,
-                status : {isDone:false,isPending:true,isCompletedWords:false} 
+                data:Task.length
 
             })
         }else if(Task.length == 200){
             return res.status(200).json({
                 messgae:`task completed`,
-                data:`you have successfully done ${Task.length}`,
-                status : {isDone:true,isPending:false,isCompletedWords:true}
+                data:`you have successfully done ${Task.length}`
 
 
             })

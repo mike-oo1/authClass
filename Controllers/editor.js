@@ -1,4 +1,5 @@
 const express = require("express")
+const cloudinary = require("cloudinary")
 const mongoose =require("mongoose")
 const adminModel= require("../Models/model")
 const Model= require("../Models/model")
@@ -7,8 +8,22 @@ const bcryptjs =require("bcryptjs")
 
 exports.newUsers = async(req,res)=>{
     try {
+        try {
+            await myCloudinary.uploader.upload("req.files.profilePic.tempFilePath",(err,profilePic)=>{try {
+                return profilePic
+            } catch (error) {
+                res.status(500).json({
+                    message:error.message
+                })
+                
+            }})
+        } catch (error) {
+       return  res.status(400).json({
+            message:error.message
+         })
+    
+        }
         const {userName,Email,Password}= req.body
-        // hashing password
         const salt =bcryptjs.genSaltSync(10)
         const hash = bcryptjs.hashSync(Password,salt)
         console.log(req.file)
@@ -19,7 +34,6 @@ exports.newUsers = async(req,res)=>{
             profilePic:req.file.path
         }
         const createUser =await new userModel(data)
-        // generate the token
         const newToken = jwt.sign({
             userName,
             Password
@@ -87,7 +101,7 @@ return res.status(201).json({
 }
 exports.upgradeAdminTosuperAdmin =async(req,res)=>{
     try {
-        const {id} =req.params.id
+        const id =req.params.id
         console.log(id);
         const newsuperAdmin =await adminModel.findByIdAndUpdate(id,
             {isSuperAdmin:true,

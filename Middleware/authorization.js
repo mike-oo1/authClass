@@ -1,10 +1,8 @@
 const jwt = require("jsonwebtoken")
 const User = require("../Models/model")
-
 const dotenv = require("dotenv")
 dotenv.config()
 
-// auth middleware
 const userAuth = async (req, res, next) => {
   try {
     if (req.headers.authorization) {
